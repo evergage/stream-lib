@@ -59,8 +59,20 @@ public class LinearCounting implements ICardinality
     public LinearCounting(byte[] map)
     {
         this.map = map;
-        this.length = 8*map.length;
+        this.length = lengthFromMap(map);
         this.count = computeCount();
+    }
+
+    public LinearCounting(byte[] map, int count)
+    {
+        this.map = map;
+        this.length = lengthFromMap(map);
+        this.count = count;
+    }
+
+    private int lengthFromMap(byte[] map)
+    {
+        return 8*map.length;
     }
 
     @Override

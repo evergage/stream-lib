@@ -18,8 +18,10 @@ package com.clearspring.analytics.stream.cardinality;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import com.clearspring.analytics.util.SerializationTestUtil;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -126,17 +128,40 @@ public class TestAdaptiveCounting
         
         for(int i=0; i<100; i++)
             ac.offer(i);
-        
-        clone = new AdaptiveCounting(ac.getBytes());
-        assertAdaptiveCountingEquals(ac, clone);        
-        
+
+        cloneAndVerifyEqual(ac);
+
         for(int i=0; i<1000000; i++)
             ac.offer(i);
-        
-        clone = new AdaptiveCounting(ac.getBytes());
-        assertAdaptiveCountingEquals(ac, clone);        
+
+        cloneAndVerifyEqual(ac);
     }
-    
+
+    private void cloneAndVerifyEqual(AdaptiveCounting ac)
+    {
+        // bytes only
+        AdaptiveCounting clone = new AdaptiveCounting(ac.getBytes());
+        assertAdaptiveCountingEquals(ac, clone);
+
+        // bytes and pre-computed values
+        clone = new AdaptiveCounting(ac.getBytes(), ac.Rsum, ac.b_e);
+        assertAdaptiveCountingEquals(ac, clone);
+    }
+
+    @Test
+    public void testJavaSerialization() throws Exception {
+        AdaptiveCounting ac = new AdaptiveCounting(10);
+        testJavaSerialization(ac);
+    }
+
+    private void testJavaSerialization(AdaptiveCounting ac) throws Exception {
+        for(int i=0; i<100; i++)
+            ac.offer(i);
+
+        AdaptiveCounting clone = (AdaptiveCounting) SerializationTestUtil.roundTripSerialize(ac);
+        assertAdaptiveCountingEquals(ac, clone);
+    }
+
     private void assertAdaptiveCountingEquals(AdaptiveCounting expected, AdaptiveCounting actual)
     {
         assertArrayEquals(expected.M, actual.M);

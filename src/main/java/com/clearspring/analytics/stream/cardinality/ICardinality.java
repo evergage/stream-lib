@@ -17,9 +17,10 @@
 package com.clearspring.analytics.stream.cardinality;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 
-public interface ICardinality
+public interface ICardinality extends Serializable
 {
     /**
      * 

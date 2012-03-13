@@ -20,8 +20,11 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 
+import com.clearspring.analytics.util.SerializationTestUtil;
 import org.junit.Test;
 
 import com.clearspring.analytics.stream.cardinality.LinearCounting.Builder;
@@ -100,17 +103,39 @@ public class TestLinearCounting
     @Test
     public void testSerialization()
     {
+        LinearCounting lc = countSomeItems();
+        
+        LinearCounting lc2 = new LinearCounting(lc.getBytes());
+        assertEqualCounting(lc, lc2);
+        
+        LinearCounting lc3 = new LinearCounting(lc.getBytes(), lc.count);
+        assertEqualCounting(lc, lc3);
+    }
+
+    private void assertEqualCounting(LinearCounting lc, LinearCounting lc2)
+    {
+        assertArrayEquals(lc.map, lc2.map);
+        assertEquals(lc.count, lc2.count);
+        assertEquals(lc.length, lc2.length);
+    }
+
+    private LinearCounting countSomeItems()
+    {
         LinearCounting lc = new LinearCounting(4);
         lc.offer("a");
         lc.offer("b");
         lc.offer("c");
         lc.offer("d");
         lc.offer("e");
-        
-        LinearCounting lc2 = new LinearCounting(lc.getBytes());
-        assertArrayEquals(lc.map, lc2.map);
-        assertEquals(lc.count, lc2.count);
-        assertEquals(lc.length, lc2.length);                                
+        return lc;
+    }
+
+    @Test
+    public void testJavaSerialization() throws Exception {
+        LinearCounting lc = countSomeItems();
+
+        LinearCounting lc2 = (LinearCounting) SerializationTestUtil.roundTripSerialize(lc);
+        assertEqualCounting(lc, lc2);
     }
     
     @Test

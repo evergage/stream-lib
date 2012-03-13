@@ -42,7 +42,7 @@ public class AdaptiveCounting extends LogLog
     /**
      * Switching empty bucket ratio
      */
-    protected final double B_s = 0.051;
+    protected static final double B_s = 0.051;
 
     public AdaptiveCounting(int k)
     {
@@ -54,10 +54,25 @@ public class AdaptiveCounting extends LogLog
     {
         super(M);
 
+        init(M);
+    }
+
+    private void init(byte[] M)
+    {
         for(byte b : M)
         {
             if(b == 0) b_e++;
         }
+    }
+
+    /**
+     * Deserialization assistance constructor.
+     */
+    public AdaptiveCounting(byte[] M, int Rsum, int b_e)
+    {
+        super(M, Rsum);
+
+        this.b_e = b_e;
     }
 
     @Override

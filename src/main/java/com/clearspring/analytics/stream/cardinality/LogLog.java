@@ -19,6 +19,8 @@ package com.clearspring.analytics.stream.cardinality;
 import com.clearspring.analytics.util.IBuilder;
 import com.clearspring.analytics.hash.MurmurHash;
 
+import java.io.Serializable;
+
 public class LogLog implements ICardinality
 {
     /**
@@ -78,15 +80,33 @@ public class LogLog implements ICardinality
 
     public LogLog(byte[] M)
     {
+        this(M, true);
+    }
+
+    private LogLog(byte[] M, boolean computeRsum)
+    {
         this.M = M;
         this.m =  M.length;
         this.k = Integer.numberOfTrailingZeros(m);
         assert(m == (1 << k)) : "Invalid array size: M.length must be a power of 2";
         this.Ca = mAlpha[k];
-        for(byte b : M)
+
+        if (computeRsum)
         {
-            Rsum += b;
+            for(byte b : M)
+            {
+                Rsum += b;
+            }
         }
+    }
+
+    /**
+     * Use for deserialization to avoid re-computing Rsum.
+     */
+    public LogLog(byte[] M, int Rsum)
+    {
+        this(M, false);
+        this.Rsum = Rsum;
     }
 
     @Override
