@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Clearspring Technologies, Inc. 
+ * Copyright (C) 2011 Clearspring Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-package com.clearspring.analytics.stream.cardinality;
+package com.clearspring.analytics.util;
 
-@SuppressWarnings("serial")
-public abstract class CardinalityMergeException extends Exception
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+
+public class Bits
 {
-    public CardinalityMergeException(String message)
+
+    public static int[] getBits(byte[] mBytes) throws IOException
     {
-        super(message);
+        int bitSize = mBytes.length / 4;
+        int[] bits = new int[bitSize];
+        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(mBytes));
+        for (int i = 0; i < bitSize; i++)
+        {
+            bits[i] = dis.readInt();
+        }
+        return bits;
     }
+
 }
