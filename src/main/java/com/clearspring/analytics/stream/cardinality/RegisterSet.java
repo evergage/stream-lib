@@ -16,7 +16,9 @@
 
 package com.clearspring.analytics.stream.cardinality;
 
-public class RegisterSet
+import java.io.Serializable;
+
+public class RegisterSet implements Serializable
 {
     public final static int LOG2_BITS_PER_WORD = 6;
     public final static int REGISTER_SIZE = 5;
